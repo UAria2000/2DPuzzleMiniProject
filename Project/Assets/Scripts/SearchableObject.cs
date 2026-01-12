@@ -19,9 +19,14 @@ public class SearchableObject : MonoBehaviour
     [Header("버튼(없으면 자동으로 GetComponent)")]
     public Button button;
 
+    [Header("드랍이 비었을 때(쓰레기만 남았을 때) 호버/클릭 자체를 막기")]
+    public bool blockRaycastsWhenEmpty = true;
+
     // 런타임 상태
     private List<string> _remainingOneTimeItems;
     private bool _noteAlreadyDroppedHere;
+
+    private CanvasGroup _cg;
 
     private enum ResultType { Trash, Note, Item }
 
@@ -35,32 +40,53 @@ public class SearchableObject : MonoBehaviour
     private void Awake()
     {
         if (button == null) button = GetComponent<Button>();
-        // ResetRunState();  //  여기서 하지 말기
+        _cg = GetComponent<CanvasGroup>();
     }
 
     private void Start()
     {
-        ResetRunState();     //  Start에서 초기화
+        ResetRunState();
     }
 
-    public void AddInitialOneTimeItem(string itemId)
+    private void OnEnable()
     {
-        if (!initialOneTimeItems.Contains(itemId))
-            initialOneTimeItems.Add(itemId);
+        // 맵 패널이 꺼졌다 켜질 때도 상태 반영
+        if (_remainingOneTimeItems == null)
+            _remainingOneTimeItems = new List<string>(initialOneTimeItems);
+
+        RefreshInteractable();
     }
 
-    public void RemoveInitialOneTimeItem(string itemId)
+    // ✅ “쓰레기 말고” 실제로 얻을 수 있는(쪽지/아이템) 것이 남아있는지
+    public bool HasNonTrashRemaining()
     {
-        initialOneTimeItems.Remove(itemId);
+        int itemCount = (_remainingOneTimeItems != null) ? _remainingOneTimeItems.Count : initialOneTimeItems.Count;
+        bool hasItems = itemCount > 0;
+
+        bool notePossible =
+            canDropNotes &&
+            !_noteAlreadyDroppedHere &&
+            NotePoolManager.I != null &&
+            NotePoolManager.I.RemainingCount > 0;
+
+        return hasItems || notePossible;
     }
 
-    // 새 회차 시작 시 호출하면 깔끔 (원하면 나중에 연결)
+    // 새 회차 시작 시 호출
     public void ResetRunState()
     {
         _remainingOneTimeItems = new List<string>(initialOneTimeItems);
         _noteAlreadyDroppedHere = false;
 
         if (button != null) button.interactable = true;
+
+        if (blockRaycastsWhenEmpty)
+        {
+            if (_cg == null) _cg = gameObject.AddComponent<CanvasGroup>();
+            _cg.blocksRaycasts = true;
+            _cg.interactable = true;
+        }
+
         gameObject.SetActive(true);
     }
 
@@ -74,8 +100,11 @@ public class SearchableObject : MonoBehaviour
         var results = new List<Result>();
 
         // 1) 남아있는 1회성 아이템들
-        foreach (var id in _remainingOneTimeItems)
-            results.Add(new Result(ResultType.Item, id));
+        if (_remainingOneTimeItems != null)
+        {
+            foreach (var id in _remainingOneTimeItems)
+                results.Add(new Result(ResultType.Item, id));
+        }
 
         // 2) 쪽지(조건 만족 시만)
         bool notePossible =
@@ -90,14 +119,13 @@ public class SearchableObject : MonoBehaviour
         // 3) 쓰레기(항상 존재)
         results.Add(new Result(ResultType.Trash));
 
-        // 무작위 선택 (쓰레기 확률 = 1 / (가능결과 수) 형태)
+        // 무작위 선택
         int pick = Random.Range(0, results.Count);
         var chosen = results[pick];
 
         switch (chosen.type)
         {
             case ResultType.Trash:
-                // 허탕: 인벤에 안 넣고 메시지만
                 Debug.Log($"[SEARCH] {objectId}: 쓰레기(허탕)");
                 break;
 
@@ -117,12 +145,10 @@ public class SearchableObject : MonoBehaviour
     {
         Debug.Log($"[SEARCH] {objectId}: 아이템 획득 {itemId}");
 
-        // 인벤에 추가
         if (GameManager.I != null)
             GameManager.I.AddItem(itemId);
 
-        // 1회성이므로 남은 목록에서 제거
-        _remainingOneTimeItems.Remove(itemId);
+        _remainingOneTimeItems?.Remove(itemId);
     }
 
     private void GiveNote()
@@ -133,7 +159,7 @@ public class SearchableObject : MonoBehaviour
         {
             Debug.Log($"[SEARCH] {objectId}: 쪽지 획득 {noteId}");
 
-            _noteAlreadyDroppedHere = true; // 이 오브젝트에서는 이후 쪽지 금지 :contentReference[oaicite:9]{index=9}
+            _noteAlreadyDroppedHere = true;
 
             if (GameManager.I != null)
                 GameManager.I.AddItem(noteId);
@@ -142,22 +168,50 @@ public class SearchableObject : MonoBehaviour
 
     private void RefreshInteractable()
     {
-        bool hasItems = _remainingOneTimeItems.Count > 0;
-
-        bool notePossible =
-            canDropNotes &&
-            !_noteAlreadyDroppedHere &&
-            NotePoolManager.I != null &&
-            NotePoolManager.I.RemainingCount > 0;
-
-        // 남은 게 쓰레기뿐이면 비활성화(false) :contentReference[oaicite:10]{index=10} :contentReference[oaicite:11]{index=11}
-        if (!hasItems && !notePossible)
+        // “쓰레기만 남았으면” 잠금 + 호버/클릭 차단
+        bool hasLoot = HasNonTrashRemaining();
+        if (!hasLoot)
         {
-            if (button != null)
-                button.interactable = false;
+            if (button != null) button.interactable = false;
 
-            // “아예 안 보이게” 하고 싶으면 아래 줄도 켜기
-            // gameObject.SetActive(false);
+            if (blockRaycastsWhenEmpty)
+            {
+                if (_cg == null) _cg = gameObject.AddComponent<CanvasGroup>();
+                _cg.blocksRaycasts = false;  // ✅ 호버/클릭 자체 차단
+                _cg.interactable = false;
+            }
         }
+        // hasLoot == true 일 때는 여기서 굳이 풀어주지 않음
+        // (조건 해금은 RequireItemsAndFlagsToInteract가 담당할 수 있으니 충돌 방지)
+    }
+
+    public void AddInitialOneTimeItem(string itemId)
+    {
+        if (string.IsNullOrEmpty(itemId)) return;
+
+        if (initialOneTimeItems == null) initialOneTimeItems = new List<string>();
+        if (!initialOneTimeItems.Contains(itemId))
+            initialOneTimeItems.Add(itemId);
+
+        // 런타임 리스트도 같이 반영(맵 다시 들어올 때 말고 즉시 반영)
+        if (_remainingOneTimeItems == null)
+            _remainingOneTimeItems = new List<string>(initialOneTimeItems);
+        else if (!_remainingOneTimeItems.Contains(itemId))
+            _remainingOneTimeItems.Add(itemId);
+
+        RefreshInteractable();
+    }
+
+    public void RemoveInitialOneTimeItem(string itemId)
+    {
+        if (string.IsNullOrEmpty(itemId)) return;
+
+        if (initialOneTimeItems != null)
+            initialOneTimeItems.Remove(itemId);
+
+        if (_remainingOneTimeItems != null)
+            _remainingOneTimeItems.Remove(itemId);
+
+        RefreshInteractable();
     }
 }
