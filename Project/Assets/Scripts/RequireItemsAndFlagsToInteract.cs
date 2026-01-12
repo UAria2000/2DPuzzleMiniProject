@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(Button))]
 public class RequireItemsAndFlagsToInteract : MonoBehaviour
 {
     [Header("이 아이템들을 모두 가지고 있어야 클릭 가능")]
@@ -12,17 +11,17 @@ public class RequireItemsAndFlagsToInteract : MonoBehaviour
     [Header("이 플래그들을 모두 만족해야 클릭 가능")]
     public List<string> requiredFlags = new();
 
-    [Header("요구조건이 하나도 없으면(리스트 비어있으면) 기본 잠금 처리")]
+    [Header("이 플래그들 중 하나라도 켜져 있으면 클릭 불가")]
+    public List<string> forbiddenFlags = new();
+
+    [Header("요구조건이 하나도 없으면 기본을 잠금(false)으로 둘지")]
     public bool lockWhenNoRequirements = true;
+
+    [Header("SearchableObject가 있고, 드랍테이블이 비면 클릭/호버도 막기")]
+    public bool requireSearchableHasLoot = false;
 
     [Header("잠겨있을 때 버튼을 투명 처리하고 싶으면 CanvasGroup 사용")]
     public bool visuallyHideWhenLocked = false;
-
-    [Header("잠겨있을 때 호버/클릭 자체도 막기(레이캐스트 차단)")]
-    public bool blockRaycastsWhenLocked = true;
-
-    [Header("SearchableObject가 붙어있다면, 드랍(쪽지/아이템)이 남아있을 때만 클릭 가능")]
-    public bool requireSearchableHasLoot = true;
 
     private Button _btn;
     private CanvasGroup _group;
@@ -32,19 +31,28 @@ public class RequireItemsAndFlagsToInteract : MonoBehaviour
     private bool _hasEvaluated;
     private bool _lastOk;
 
+    private Coroutine _co;
+
     private void Awake()
     {
+        // 같은 오브젝트에 Button이 없고 자식에만 있는 경우 대비
         _btn = GetComponent<Button>();
+        if (_btn == null) _btn = GetComponentInChildren<Button>(true);
+
         _group = GetComponent<CanvasGroup>();
         _searchable = GetComponent<SearchableObject>();
 
-        // 초기에는 잠금으로 두기(매니저 준비 전에도 클릭되는 것 방지)
+        // 시작 순간은 무조건 잠금
         Apply(false);
     }
 
     private void OnEnable()
     {
-        StartCoroutine(InitWhenReady());
+        // 맵을 “처음 들어올 때”도 무조건 잠금부터
+        Apply(false);
+
+        if (_co != null) StopCoroutine(_co);
+        _co = StartCoroutine(InitWhenReady());
     }
 
     private IEnumerator InitWhenReady()
@@ -64,13 +72,14 @@ public class RequireItemsAndFlagsToInteract : MonoBehaviour
             GameManager.I.InventoryChanged -= Evaluate;
 
         _initialized = false;
+
+        if (_co != null) { StopCoroutine(_co); _co = null; }
     }
 
-    // 플래그는 이벤트가 없어서 주기 체크(간단 버전)
     private void Update()
     {
         if (!_initialized) return;
-        Evaluate();
+        Evaluate(); // 플래그 변화는 이벤트가 없어서 주기 체크
     }
 
     public void Evaluate()
@@ -86,38 +95,37 @@ public class RequireItemsAndFlagsToInteract : MonoBehaviour
 
     private bool AreAllMet()
     {
-        // 요구조건이 아무것도 없으면 기본 잠금(실수 방지)
+        // 요구조건이 하나도 없으면 실수 방지로 잠금
         if (lockWhenNoRequirements &&
             (requiredItems == null || requiredItems.Count == 0) &&
             (requiredFlags == null || requiredFlags.Count == 0) &&
-            !(requireSearchableHasLoot && _searchable != null))
-        {
+            (forbiddenFlags == null || forbiddenFlags.Count == 0) &&
+            !requireSearchableHasLoot)
             return false;
-        }
 
-        //  SearchableObject가 비었으면(쓰레기만 남으면) 무조건 잠금
-        if (requireSearchableHasLoot && _searchable != null)
-        {
-            if (!_searchable.HasNonTrashRemaining())
+        if (GameManager.I == null || FlagStore.I == null) return false;
+
+        // 아이템(모두 필요)
+        foreach (var id in requiredItems)
+            if (!GameManager.I.HasItem(id))
                 return false;
-        }
 
-        // 아이템 조건
-        if (GameManager.I == null) return false;
-        if (requiredItems != null)
-        {
-            foreach (var id in requiredItems)
-                if (!GameManager.I.HasItem(id))
-                    return false;
-        }
+        // 플래그(모두 필요)
+        foreach (var f in requiredFlags)
+            if (!FlagStore.I.Has(f))
+                return false;
 
-        // 플래그 조건
-        if (FlagStore.I == null) return false;
-        if (requiredFlags != null)
+        // 금지 플래그(하나라도 켜져 있으면 불가)
+        foreach (var f in forbiddenFlags)
+            if (FlagStore.I.Has(f))
+                return false;
+
+        // 드랍테이블 비면 불가
+        if (requireSearchableHasLoot)
         {
-            foreach (var f in requiredFlags)
-                if (!FlagStore.I.Has(f))
-                    return false;
+            if (_searchable == null) _searchable = GetComponent<SearchableObject>();
+            if (_searchable != null && !_searchable.HasNonTrashRemaining())
+                return false;
         }
 
         return true;
@@ -125,21 +133,15 @@ public class RequireItemsAndFlagsToInteract : MonoBehaviour
 
     private void Apply(bool ok)
     {
-        if (_btn != null) _btn.interactable = ok;
+        if (_btn != null)
+            _btn.interactable = ok;
 
-        // 레이캐스트 차단(호버/클릭 방지)
-        if (blockRaycastsWhenLocked || visuallyHideWhenLocked)
+        if (visuallyHideWhenLocked)
         {
             if (_group == null) _group = gameObject.AddComponent<CanvasGroup>();
-
-            if (blockRaycastsWhenLocked)
-            {
-                _group.blocksRaycasts = ok;
-                _group.interactable = ok;
-            }
-
-            if (visuallyHideWhenLocked)
-                _group.alpha = ok ? 1f : 0f;
+            _group.alpha = ok ? 1f : 0f;
+            _group.blocksRaycasts = ok;
+            _group.interactable = ok;
         }
     }
 }

@@ -2030,10 +2030,10 @@ MonoBehaviour:
   - "\uC5F0\uB8CC\uD1B5"
   requiredFlags:
   - bridgeActivated
+  forbiddenFlags: []
   lockWhenNoRequirements: 1
-  visuallyHideWhenLocked: 1
-  blockRaycastsWhenLocked: 1
   requireSearchableHasLoot: 1
+  visuallyHideWhenLocked: 1
 --- !u!1 &300538963
 GameObject:
   m_ObjectHideFlags: 0
@@ -3186,10 +3186,10 @@ MonoBehaviour:
   requiredItems: []
   requiredFlags:
   - bridgeActivated
+  forbiddenFlags: []
   lockWhenNoRequirements: 1
-  visuallyHideWhenLocked: 1
-  blockRaycastsWhenLocked: 1
   requireSearchableHasLoot: 1
+  visuallyHideWhenLocked: 1
 --- !u!1 &410485416
 GameObject:
   m_ObjectHideFlags: 0
@@ -4057,10 +4057,10 @@ MonoBehaviour:
   - "\uC808\uC5F0\uD14C\uC774\uD504"
   - "\uACF5\uAE30 \uD38C\uD504"
   requiredFlags: []
+  forbiddenFlags: []
   lockWhenNoRequirements: 1
-  visuallyHideWhenLocked: 0
-  blockRaycastsWhenLocked: 1
   requireSearchableHasLoot: 1
+  visuallyHideWhenLocked: 0
 --- !u!1 &468472493
 GameObject:
   m_ObjectHideFlags: 0
@@ -6341,10 +6341,10 @@ MonoBehaviour:
   requiredItems:
   - "\uC808\uC5F0 \uD14C\uC774\uD504"
   requiredFlags: []
+  forbiddenFlags: []
   lockWhenNoRequirements: 1
-  visuallyHideWhenLocked: 0
-  blockRaycastsWhenLocked: 1
   requireSearchableHasLoot: 1
+  visuallyHideWhenLocked: 0
 --- !u!114 &617047386
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7223,10 +7223,10 @@ MonoBehaviour:
   requiredItems:
   - "\uB4F1\uB300\uC6A9 \uC804\uAD6C"
   requiredFlags: []
+  forbiddenFlags: []
   lockWhenNoRequirements: 1
-  visuallyHideWhenLocked: 1
-  blockRaycastsWhenLocked: 1
   requireSearchableHasLoot: 1
+  visuallyHideWhenLocked: 1
 --- !u!114 &770638799
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10395,10 +10395,10 @@ MonoBehaviour:
   - "\uC790\uC804\uAC70"
   requiredFlags:
   - bridgeActivated
+  forbiddenFlags: []
   lockWhenNoRequirements: 1
-  visuallyHideWhenLocked: 1
-  blockRaycastsWhenLocked: 1
   requireSearchableHasLoot: 1
+  visuallyHideWhenLocked: 1
 --- !u!114 &1048493566
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10857,10 +10857,10 @@ MonoBehaviour:
   requiredItems: []
   requiredFlags:
   - RepairAntenna
+  forbiddenFlags: []
   lockWhenNoRequirements: 1
-  visuallyHideWhenLocked: 0
-  blockRaycastsWhenLocked: 1
   requireSearchableHasLoot: 1
+  visuallyHideWhenLocked: 0
 --- !u!114 &1075405160
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11070,10 +11070,10 @@ MonoBehaviour:
   requiredItems:
   - "\uC790"
   requiredFlags: []
+  forbiddenFlags: []
   lockWhenNoRequirements: 1
-  visuallyHideWhenLocked: 0
-  blockRaycastsWhenLocked: 1
   requireSearchableHasLoot: 1
+  visuallyHideWhenLocked: 0
 --- !u!1 &1085375720
 GameObject:
   m_ObjectHideFlags: 0
@@ -12043,10 +12043,10 @@ MonoBehaviour:
   requiredItems:
   - "\uC790"
   requiredFlags: []
+  forbiddenFlags: []
   lockWhenNoRequirements: 1
-  visuallyHideWhenLocked: 0
-  blockRaycastsWhenLocked: 1
   requireSearchableHasLoot: 1
+  visuallyHideWhenLocked: 0
 --- !u!114 &1166380652
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12265,10 +12265,11 @@ MonoBehaviour:
   - "\uD4E8\uC988"
   - "\uB3C4\uAC1C\uAD50 \uC2DC\uB3D9 \uD0A4"
   requiredFlags: []
+  forbiddenFlags:
+  - bridgeActivated
   lockWhenNoRequirements: 1
+  requireSearchableHasLoot: 0
   visuallyHideWhenLocked: 0
-  blockRaycastsWhenLocked: 1
-  requireSearchableHasLoot: 1
 --- !u!114 &1192916033
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12278,10 +12279,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1192916022}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: edc7b57d78a205c4b86ab153662005d1, type: 3}
+  m_Script: {fileID: 11500000, guid: ce2570f10da15db47a9af29162905ba1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outline: {fileID: 1509392290}
+  target: {fileID: 1509392288}
 --- !u!1 &1234391692
 GameObject:
   m_ObjectHideFlags: 0
@@ -15786,10 +15787,10 @@ MonoBehaviour:
   - RepairLight
   - ActiveRadio
   - bridgeActivated
+  forbiddenFlags: []
   lockWhenNoRequirements: 1
-  visuallyHideWhenLocked: 0
-  blockRaycastsWhenLocked: 1
   requireSearchableHasLoot: 1
+  visuallyHideWhenLocked: 0
 --- !u!114 &1550473100
 MonoBehaviour:
   m_ObjectHideFlags: 0
