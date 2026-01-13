@@ -3843,7 +3843,6 @@ GameObject:
   - component: {fileID: 461896686}
   - component: {fileID: 461896685}
   - component: {fileID: 461896692}
-  - component: {fileID: 461896693}
   m_Layer: 5
   m_Name: RubberBoat
   m_TagString: Untagged
@@ -4039,37 +4038,14 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 461896683}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 02d56295d6037ee4083569a39c458479, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   requiredItems:
   - "\uC808\uC5F0 \uD14C\uC774\uD504"
-  - "\uB178"
   - "\uACF5\uAE30 \uD38C\uD504"
-  visuallyHideWhenLocked: 0
---- !u!114 &461896693
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 461896683}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: df71c9c24ce7cd342859948edd4a9a11, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  onlyLock: 0
-  requiredItems:
-  - "\uC808\uC5F0\uD14C\uC774\uD504"
-  - "\uACF5\uAE30 \uD38C\uD504"
-  requiredFlags: []
-  forbiddenFlags: []
-  requireRescueUnlocked: 0
-  lockWhenNoRequirements: 1
-  requireSearchableHasLoot: 1
   visuallyHideWhenLocked: 0
 --- !u!1 &468472493
 GameObject:
