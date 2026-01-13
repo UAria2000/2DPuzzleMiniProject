@@ -5,6 +5,9 @@ using UnityEngine.UI;
 
 public class RequireItemsAndFlagsToInteract : MonoBehaviour
 {
+    [Header("true면 '잠글 때만' 적용(열지는 않음) - 탐색 오브젝트용")]
+    public bool onlyLock = false;
+
     [Header("이 아이템들을 모두 가지고 있어야 클릭 가능")]
     public List<string> requiredItems = new();
 
@@ -13,6 +16,9 @@ public class RequireItemsAndFlagsToInteract : MonoBehaviour
 
     [Header("이 플래그들 중 하나라도 켜져 있으면 클릭 불가")]
     public List<string> forbiddenFlags = new();
+
+    [Header("메타 조건: 구조 루트(Rescue) 해금이 필요")]
+    public bool requireRescueUnlocked = false;
 
     [Header("요구조건이 하나도 없으면 기본을 잠금(false)으로 둘지")]
     public bool lockWhenNoRequirements = true;
@@ -79,7 +85,7 @@ public class RequireItemsAndFlagsToInteract : MonoBehaviour
     private void Update()
     {
         if (!_initialized) return;
-        Evaluate(); // 플래그 변화는 이벤트가 없어서 주기 체크
+        Evaluate(); // 플래그/메타 변화는 이벤트가 없어서 주기 체크
     }
 
     public void Evaluate()
@@ -100,10 +106,18 @@ public class RequireItemsAndFlagsToInteract : MonoBehaviour
             (requiredItems == null || requiredItems.Count == 0) &&
             (requiredFlags == null || requiredFlags.Count == 0) &&
             (forbiddenFlags == null || forbiddenFlags.Count == 0) &&
-            !requireSearchableHasLoot)
+            !requireSearchableHasLoot &&
+            !requireRescueUnlocked)
             return false;
 
         if (GameManager.I == null || FlagStore.I == null) return false;
+
+        // 메타 조건: 구조루트 해금 필요
+        if (requireRescueUnlocked)
+        {
+            if (MetaSave.I == null) return false;
+            if (!MetaSave.I.RescueUnlocked) return false;
+        }
 
         // 아이템(모두 필요)
         foreach (var id in requiredItems)
@@ -134,14 +148,39 @@ public class RequireItemsAndFlagsToInteract : MonoBehaviour
     private void Apply(bool ok)
     {
         if (_btn != null)
-            _btn.interactable = ok;
+        {
+            if (onlyLock)
+            {
+                //  조건이 안 맞으면 잠그기만 하고,
+                // 조건이 맞아도 "열지는 않음" (SearchableObject/다른 시스템이 관리)
+                if (!ok) _btn.interactable = false;
+            }
+            else
+            {
+                _btn.interactable = ok;
+            }
+        }
 
         if (visuallyHideWhenLocked)
         {
             if (_group == null) _group = gameObject.AddComponent<CanvasGroup>();
-            _group.alpha = ok ? 1f : 0f;
-            _group.blocksRaycasts = ok;
-            _group.interactable = ok;
+
+            if (onlyLock)
+            {
+                if (!ok)
+                {
+                    _group.alpha = 0f;
+                    _group.blocksRaycasts = false;
+                    _group.interactable = false;
+                }
+                // ok일 때는 건드리지 않음
+            }
+            else
+            {
+                _group.alpha = ok ? 1f : 0f;
+                _group.blocksRaycasts = ok;
+                _group.interactable = ok;
+            }
         }
     }
 }

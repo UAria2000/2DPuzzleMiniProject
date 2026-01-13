@@ -16,14 +16,17 @@ public class MetaSave : MonoBehaviour
 
     private void Awake()
     {
-        if (I != null) { Destroy(gameObject); return; }
+        if (I != null && I != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         I = this;
         DontDestroyOnLoad(gameObject);
 
         Load();
-        RecalcRescueUnlocked();
     }
-
     public bool HasSeen(string endingFlagId) => _seenEndings.Contains(endingFlagId);
 
     // 엔딩을 봤다고 기록
@@ -85,8 +88,16 @@ public class MetaSave : MonoBehaviour
     public void ResetAllMeta()
     {
         _seenEndings.Clear();
-        Save();
-        RecalcRescueUnlocked();
+
+        // 저장키를 확실히 삭제
+        PlayerPrefs.DeleteKey(SeenKey);
+        PlayerPrefs.DeleteKey("rescueUnlocked");
+        PlayerPrefs.Save();
+
+        // 메모리/상태도 확실히 초기화
+        RescueUnlocked = false;
+
+        Debug.Log("[MetaSave] ResetAllMeta: cleared seen endings + deleted PlayerPrefs keys");
     }
 }
 

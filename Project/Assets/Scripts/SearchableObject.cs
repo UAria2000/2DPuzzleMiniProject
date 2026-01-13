@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 public class SearchableObject : MonoBehaviour
 {
-    [Header("디버그용 ID (각 탐색 오브젝트마다 고유 추천)")]
+    [Header("각 탐색 오브젝트마다 고유 ID (필수 추천)")]
     public string objectId;
 
     [Header("탐색 시 소모 시간(분)")]
@@ -16,19 +16,24 @@ public class SearchableObject : MonoBehaviour
     [Header("이 오브젝트에서 1회성으로 나올 수 있는 아이템들(중복 X)")]
     public List<string> initialOneTimeItems = new();
 
-    [Header("버튼(없으면 자동으로 GetComponent)")]
+    [Header("버튼(없으면 자동으로 찾음)")]
     public Button button;
 
-    [Header("쪽지/아이템이 더 이상 안 나오면(쓰레기만 남으면) 호버/클릭 자체 막기")]
-    public bool blockRaycastsWhenEmpty = true;
+    [Header("‘소진(더 이상 얻을 게 없음)’ 상태면 호버/클릭 자체 막기")]
+    public bool blockRaycastsWhenExhausted = true;
 
-    // 런타임 상태
+    [Header("처음부터 비어있어도 1번은 탐색(허탕) 가능하게")]
+    public bool allowEmptySearchOnce = true;
+
+    [Header("버튼을 강제로 켜지 않고, 소진일 때만 끄기(권장)")]
+    public bool onlyDisableWhenExhausted = true;
+
     private List<string> _remainingOneTimeItems;
     private bool _noteAlreadyDroppedHere;
+    private bool _searchedOnce;
     private CanvasGroup _cg;
 
     private enum ResultType { Trash, Note, Item }
-
     private struct Result
     {
         public ResultType type;
@@ -36,44 +41,104 @@ public class SearchableObject : MonoBehaviour
         public Result(ResultType t, string id = null) { type = t; itemId = id; }
     }
 
+    private string KeyPrefix
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(objectId))
+            {
+                objectId = gameObject.name;
+                Debug.LogWarning($"[SearchableObject] objectId 비어있음 -> '{objectId}'로 자동 설정됨");
+            }
+            return $"SO_{objectId}_";
+        }
+    }
+
+    private string FlagSearched => KeyPrefix + "S";
+    private string FlagNoteUsed => KeyPrefix + "N";
+    private string FlagTaken(string itemId) => KeyPrefix + "T_" + itemId;
+
     private void Awake()
     {
         if (button == null) button = GetComponent<Button>();
-        _cg = GetComponent<CanvasGroup>();
 
         if (initialOneTimeItems == null) initialOneTimeItems = new List<string>();
-    }
-
-    private void Start()
-    {
-        // 시작 때 interactable을 true로 강제하지 않는다!
-        EnsureRuntimeList();
-        RefreshLockIfEmpty();
+        _cg = GetComponent<CanvasGroup>();
     }
 
     private void OnEnable()
     {
-        EnsureRuntimeList();
-        RefreshLockIfEmpty();
+        InitFromFlags();
+        ApplyExhaustedLock();
     }
 
-    private void EnsureRuntimeList()
+    private void Start()
+    {
+        InitFromFlags();
+        ApplyExhaustedLock();
+    }
+
+    private void InitFromFlags()
     {
         if (initialOneTimeItems == null) initialOneTimeItems = new List<string>();
 
-        if (_remainingOneTimeItems == null)
-            _remainingOneTimeItems = new List<string>(initialOneTimeItems);
+        // 런타임 목록 구성
+        _remainingOneTimeItems = new List<string>(initialOneTimeItems);
 
-        if (blockRaycastsWhenEmpty && _cg == null)
-            _cg = GetComponent<CanvasGroup>(); // 필요하면 나중에 Add
+        // FlagStore 상태 반영(맵 재진입/재활성화 대응)
+        if (FlagStore.I != null)
+        {
+            _searchedOnce = FlagStore.I.Has(FlagSearched);
+            _noteAlreadyDroppedHere = FlagStore.I.Has(FlagNoteUsed);
+
+            // 이미 가져간 아이템 제거
+            for (int i = _remainingOneTimeItems.Count - 1; i >= 0; i--)
+            {
+                var id = _remainingOneTimeItems[i];
+                if (FlagStore.I.Has(FlagTaken(id)))
+                    _remainingOneTimeItems.RemoveAt(i);
+            }
+        }
     }
 
-    // “쓰레기 말고” 얻을 수 있는 게 남아있는지
+    public void AddInitialOneTimeItem(string itemId)
+    {
+        if (string.IsNullOrEmpty(itemId)) return;
+
+        if (initialOneTimeItems == null) initialOneTimeItems = new List<string>();
+        if (!initialOneTimeItems.Contains(itemId))
+            initialOneTimeItems.Add(itemId);
+
+        if (_remainingOneTimeItems == null) _remainingOneTimeItems = new List<string>();
+        if (!_remainingOneTimeItems.Contains(itemId))
+            _remainingOneTimeItems.Add(itemId);
+
+        ApplyExhaustedLock();
+    }
+
+    public void RemoveInitialOneTimeItem(string itemId)
+    {
+        if (string.IsNullOrEmpty(itemId)) return;
+
+        initialOneTimeItems?.Remove(itemId);
+        _remainingOneTimeItems?.Remove(itemId);
+
+        ApplyExhaustedLock();
+    }
+
+    public void ResetRunState()
+    {
+        // 런 리셋 시 FlagStore.ResetAll()을 보통 같이 하므로 여기선 내부 상태만 초기화
+        _searchedOnce = false;
+        _noteAlreadyDroppedHere = false;
+        _remainingOneTimeItems = new List<string>(initialOneTimeItems);
+
+        ApplyExhaustedLock();
+    }
+
     public bool HasNonTrashRemaining()
     {
-        EnsureRuntimeList();
-
-        bool hasItems = _remainingOneTimeItems.Count > 0;
+        bool hasItems = _remainingOneTimeItems != null && _remainingOneTimeItems.Count > 0;
 
         bool notePossible =
             canDropNotes &&
@@ -84,61 +149,36 @@ public class SearchableObject : MonoBehaviour
         return hasItems || notePossible;
     }
 
-    // ==========================
-    // RandomUniqueItemAssigner 지원용 API
-    // ==========================
-    public void AddInitialOneTimeItem(string itemId)
+    private bool IsExhausted()
     {
-        if (string.IsNullOrEmpty(itemId)) return;
+        // allowEmptySearchOnce = true면, “한 번도 탐색 안 했으면” 비어 있어도 소진 아님(허탕 1회 허용)
+        if (allowEmptySearchOnce && !_searchedOnce) return false;
 
-        if (initialOneTimeItems == null) initialOneTimeItems = new List<string>();
-        if (!initialOneTimeItems.Contains(itemId))
-            initialOneTimeItems.Add(itemId);
-
-        EnsureRuntimeList();
-        if (!_remainingOneTimeItems.Contains(itemId))
-            _remainingOneTimeItems.Add(itemId);
-
-        RefreshLockIfEmpty();
-    }
-
-    public void RemoveInitialOneTimeItem(string itemId)
-    {
-        if (string.IsNullOrEmpty(itemId)) return;
-
-        if (initialOneTimeItems != null)
-            initialOneTimeItems.Remove(itemId);
-
-        if (_remainingOneTimeItems != null)
-            _remainingOneTimeItems.Remove(itemId);
-
-        RefreshLockIfEmpty();
-    }
-
-    // 새 회차 시작 시 호출(재시작/타이틀 복귀 후 새 시작 등)
-    public void ResetRunState()
-    {
-        if (initialOneTimeItems == null) initialOneTimeItems = new List<string>();
-
-        _remainingOneTimeItems = new List<string>(initialOneTimeItems);
-        _noteAlreadyDroppedHere = false;
-
-        // 여기서 interactable true / SetActive(true) 강제 금지
-        RefreshLockIfEmpty();
+        return !HasNonTrashRemaining();
     }
 
     public void Search()
     {
-        EnsureRuntimeList();
+        if (IsExhausted())
+        {
+            ApplyExhaustedLock();
+            return;
+        }
 
         if (TimeManager.I != null)
             TimeManager.I.Spend(searchCostMinutes);
 
+        _searchedOnce = true;
+        if (FlagStore.I != null) FlagStore.I.Set(FlagSearched);
+
         var results = new List<Result>();
 
-        for (int i = 0; i < _remainingOneTimeItems.Count; i++)
-            results.Add(new Result(ResultType.Item, _remainingOneTimeItems[i]));
+        // 아이템
+        if (_remainingOneTimeItems != null)
+            foreach (var id in _remainingOneTimeItems)
+                results.Add(new Result(ResultType.Item, id));
 
+        // 쪽지
         bool notePossible =
             canDropNotes &&
             !_noteAlreadyDroppedHere &&
@@ -148,6 +188,7 @@ public class SearchableObject : MonoBehaviour
         if (notePossible)
             results.Add(new Result(ResultType.Note));
 
+        // 쓰레기
         results.Add(new Result(ResultType.Trash));
 
         int pick = Random.Range(0, results.Count);
@@ -168,19 +209,20 @@ public class SearchableObject : MonoBehaviour
                 break;
         }
 
-        RefreshLockIfEmpty();
+        ApplyExhaustedLock();
     }
 
     private void GiveItemOnce(string itemId)
     {
         if (string.IsNullOrEmpty(itemId)) return;
 
-        Debug.Log($"[SEARCH] {objectId}: 아이템 획득 {itemId}");
-
         if (GameManager.I != null)
             GameManager.I.AddItem(itemId);
 
-        _remainingOneTimeItems.Remove(itemId);
+        _remainingOneTimeItems?.Remove(itemId);
+
+        if (FlagStore.I != null)
+            FlagStore.I.Set(FlagTaken(itemId));
     }
 
     private void GiveNote()
@@ -189,36 +231,39 @@ public class SearchableObject : MonoBehaviour
 
         if (NotePoolManager.I.TryTakeRandomNote(out var noteId))
         {
-            Debug.Log($"[SEARCH] {objectId}: 쪽지 획득 {noteId}");
-
             _noteAlreadyDroppedHere = true;
+
+            if (FlagStore.I != null)
+                FlagStore.I.Set(FlagNoteUsed);
 
             if (GameManager.I != null)
                 GameManager.I.AddItem(noteId);
         }
     }
 
-    // 비었을 때만 클릭/호버 자체 차단
-    private void RefreshLockIfEmpty()
+    private void ApplyExhaustedLock()
     {
-        EnsureRuntimeList();
+        bool exhausted = IsExhausted();
 
-        if (!HasNonTrashRemaining())
+        // 버튼은 “소진이면 끄기”
+        if (button != null)
         {
-            if (button != null)
-                button.interactable = false;
+            if (exhausted) button.interactable = false;
+            else if (!onlyDisableWhenExhausted) button.interactable = true;
+        }
 
-            if (blockRaycastsWhenEmpty)
+        // 호버/클릭 자체 차단
+        if (blockRaycastsWhenExhausted)
+        {
+            if (_cg == null) _cg = GetComponent<CanvasGroup>();
+            if (_cg == null) _cg = gameObject.AddComponent<CanvasGroup>();
+
+            if (exhausted)
             {
-                if (_cg == null) _cg = gameObject.AddComponent<CanvasGroup>();
                 _cg.blocksRaycasts = false;
                 _cg.interactable = false;
             }
-        }
-        else
-        {
-            // 여기서는 "다시 켜기"를 하지 않음 (조건 잠금 스크립트가 관리)
-            if (blockRaycastsWhenEmpty && _cg != null)
+            else
             {
                 _cg.blocksRaycasts = true;
                 _cg.interactable = true;

@@ -745,7 +745,9 @@ MonoBehaviour:
   canDropNotes: 1
   initialOneTimeItems: []
   button: {fileID: 152075769}
-  blockRaycastsWhenEmpty: 1
+  blockRaycastsWhenExhausted: 1
+  allowEmptySearchOnce: 1
+  onlyDisableWhenExhausted: 1
 --- !u!114 &152075773
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1143,7 +1145,9 @@ MonoBehaviour:
   canDropNotes: 1
   initialOneTimeItems: []
   button: {fileID: 194447234}
-  blockRaycastsWhenEmpty: 1
+  blockRaycastsWhenExhausted: 1
+  allowEmptySearchOnce: 1
+  onlyDisableWhenExhausted: 1
 --- !u!114 &194447238
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2024,6 +2028,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df71c9c24ce7cd342859948edd4a9a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onlyLock: 0
   requiredItems:
   - "\uCC28\uB7C9\uC6A9 \uBC30\uD130\uB9AC"
   - "\uCC28\uD0A4"
@@ -2031,6 +2036,7 @@ MonoBehaviour:
   requiredFlags:
   - bridgeActivated
   forbiddenFlags: []
+  requireRescueUnlocked: 0
   lockWhenNoRequirements: 1
   requireSearchableHasLoot: 1
   visuallyHideWhenLocked: 1
@@ -3183,10 +3189,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df71c9c24ce7cd342859948edd4a9a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onlyLock: 0
   requiredItems: []
   requiredFlags:
   - bridgeActivated
   forbiddenFlags: []
+  requireRescueUnlocked: 0
   lockWhenNoRequirements: 1
   requireSearchableHasLoot: 1
   visuallyHideWhenLocked: 1
@@ -4053,11 +4061,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df71c9c24ce7cd342859948edd4a9a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onlyLock: 0
   requiredItems:
   - "\uC808\uC5F0\uD14C\uC774\uD504"
   - "\uACF5\uAE30 \uD38C\uD504"
   requiredFlags: []
   forbiddenFlags: []
+  requireRescueUnlocked: 0
   lockWhenNoRequirements: 1
   requireSearchableHasLoot: 1
   visuallyHideWhenLocked: 0
@@ -4556,7 +4566,9 @@ MonoBehaviour:
   canDropNotes: 1
   initialOneTimeItems: []
   button: {fileID: 0}
-  blockRaycastsWhenEmpty: 1
+  blockRaycastsWhenExhausted: 1
+  allowEmptySearchOnce: 1
+  onlyDisableWhenExhausted: 1
 --- !u!1 &514535921
 GameObject:
   m_ObjectHideFlags: 0
@@ -6338,10 +6350,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df71c9c24ce7cd342859948edd4a9a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onlyLock: 0
   requiredItems:
   - "\uC808\uC5F0 \uD14C\uC774\uD504"
   requiredFlags: []
-  forbiddenFlags: []
+  forbiddenFlags:
+  - RepairAntenna
+  requireRescueUnlocked: 0
   lockWhenNoRequirements: 1
   requireSearchableHasLoot: 1
   visuallyHideWhenLocked: 0
@@ -6952,7 +6967,9 @@ MonoBehaviour:
   canDropNotes: 1
   initialOneTimeItems: []
   button: {fileID: 721595365}
-  blockRaycastsWhenEmpty: 1
+  blockRaycastsWhenExhausted: 1
+  allowEmptySearchOnce: 1
+  onlyDisableWhenExhausted: 1
 --- !u!114 &721595369
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7220,10 +7237,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df71c9c24ce7cd342859948edd4a9a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onlyLock: 0
   requiredItems:
   - "\uB4F1\uB300\uC6A9 \uC804\uAD6C"
   requiredFlags: []
-  forbiddenFlags: []
+  forbiddenFlags:
+  - RepairLight
+  requireRescueUnlocked: 0
   lockWhenNoRequirements: 1
   requireSearchableHasLoot: 1
   visuallyHideWhenLocked: 1
@@ -7938,7 +7958,9 @@ MonoBehaviour:
   canDropNotes: 1
   initialOneTimeItems: []
   button: {fileID: 0}
-  blockRaycastsWhenEmpty: 1
+  blockRaycastsWhenExhausted: 1
+  allowEmptySearchOnce: 1
+  onlyDisableWhenExhausted: 1
 --- !u!114 &842872028
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8119,7 +8141,9 @@ MonoBehaviour:
   initialOneTimeItems:
   - "\uCE7C"
   button: {fileID: 869941970}
-  blockRaycastsWhenEmpty: 1
+  blockRaycastsWhenExhausted: 1
+  allowEmptySearchOnce: 1
+  onlyDisableWhenExhausted: 1
 --- !u!114 &869941974
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8499,7 +8523,9 @@ MonoBehaviour:
   canDropNotes: 1
   initialOneTimeItems: []
   button: {fileID: 905542810}
-  blockRaycastsWhenEmpty: 1
+  blockRaycastsWhenExhausted: 1
+  allowEmptySearchOnce: 1
+  onlyDisableWhenExhausted: 1
 --- !u!114 &905542814
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9009,7 +9035,9 @@ MonoBehaviour:
   initialOneTimeItems:
   - "\uD4E8\uC988"
   button: {fileID: 941691007}
-  blockRaycastsWhenEmpty: 1
+  blockRaycastsWhenExhausted: 1
+  allowEmptySearchOnce: 1
+  onlyDisableWhenExhausted: 1
 --- !u!114 &941691011
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9576,7 +9604,9 @@ MonoBehaviour:
   canDropNotes: 1
   initialOneTimeItems: []
   button: {fileID: 0}
-  blockRaycastsWhenEmpty: 1
+  blockRaycastsWhenExhausted: 1
+  allowEmptySearchOnce: 1
+  onlyDisableWhenExhausted: 1
 --- !u!114 &996560984
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9770,7 +9800,9 @@ MonoBehaviour:
   canDropNotes: 1
   initialOneTimeItems: []
   button: {fileID: 0}
-  blockRaycastsWhenEmpty: 1
+  blockRaycastsWhenExhausted: 1
+  allowEmptySearchOnce: 1
+  onlyDisableWhenExhausted: 1
 --- !u!1 &1024268325
 GameObject:
   m_ObjectHideFlags: 0
@@ -10160,8 +10192,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 772, y: 273}
+  m_AnchoredPosition: {x: 16.8, y: 25}
+  m_SizeDelta: {x: 302, y: 213}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1044953841
 MonoBehaviour:
@@ -10198,7 +10230,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 4bc1847cee5d8104d9f68d7bf9ff181d, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 024bcfe3cb862b64fb503a2660484b86, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -10391,11 +10423,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df71c9c24ce7cd342859948edd4a9a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onlyLock: 0
   requiredItems:
   - "\uC790\uC804\uAC70"
   requiredFlags:
   - bridgeActivated
   forbiddenFlags: []
+  requireRescueUnlocked: 0
   lockWhenNoRequirements: 1
   requireSearchableHasLoot: 1
   visuallyHideWhenLocked: 1
@@ -10854,10 +10888,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df71c9c24ce7cd342859948edd4a9a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onlyLock: 0
   requiredItems: []
   requiredFlags:
   - RepairAntenna
-  forbiddenFlags: []
+  forbiddenFlags:
+  - ActiveRadio
+  requireRescueUnlocked: 0
   lockWhenNoRequirements: 1
   requireSearchableHasLoot: 1
   visuallyHideWhenLocked: 0
@@ -11041,7 +11078,9 @@ MonoBehaviour:
   canDropNotes: 1
   initialOneTimeItems: []
   button: {fileID: 1082968831}
-  blockRaycastsWhenEmpty: 1
+  blockRaycastsWhenExhausted: 1
+  allowEmptySearchOnce: 1
+  onlyDisableWhenExhausted: 1
 --- !u!114 &1082968836
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11064,15 +11103,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1082968826}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: df71c9c24ce7cd342859948edd4a9a11, type: 3}
+  m_Script: {fileID: 11500000, guid: 02d56295d6037ee4083569a39c458479, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   requiredItems:
   - "\uC790"
-  requiredFlags: []
-  forbiddenFlags: []
-  lockWhenNoRequirements: 1
-  requireSearchableHasLoot: 1
   visuallyHideWhenLocked: 0
 --- !u!1 &1085375720
 GameObject:
@@ -11620,7 +11655,9 @@ MonoBehaviour:
   canDropNotes: 1
   initialOneTimeItems: []
   button: {fileID: 1129748531}
-  blockRaycastsWhenEmpty: 1
+  blockRaycastsWhenExhausted: 1
+  allowEmptySearchOnce: 1
+  onlyDisableWhenExhausted: 1
 --- !u!114 &1129748535
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11899,8 +11936,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -44.97, y: -363.42}
-  m_SizeDelta: {x: 772, y: 273}
+  m_AnchoredPosition: {x: -44.74, y: -363.51}
+  m_SizeDelta: {x: 302, y: 213}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1166380644
 MonoBehaviour:
@@ -12027,7 +12064,9 @@ MonoBehaviour:
   initialOneTimeItems:
   - "\uB3C4\uAC1C\uAD50 \uC2DC\uB3D9 \uD0A4"
   button: {fileID: 1166380647}
-  blockRaycastsWhenEmpty: 1
+  blockRaycastsWhenExhausted: 1
+  allowEmptySearchOnce: 1
+  onlyDisableWhenExhausted: 1
 --- !u!114 &1166380651
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12040,10 +12079,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df71c9c24ce7cd342859948edd4a9a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onlyLock: 0
   requiredItems:
   - "\uC790"
   requiredFlags: []
   forbiddenFlags: []
+  requireRescueUnlocked: 0
   lockWhenNoRequirements: 1
   requireSearchableHasLoot: 1
   visuallyHideWhenLocked: 0
@@ -12261,12 +12302,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df71c9c24ce7cd342859948edd4a9a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onlyLock: 0
   requiredItems:
   - "\uD4E8\uC988"
   - "\uB3C4\uAC1C\uAD50 \uC2DC\uB3D9 \uD0A4"
   requiredFlags: []
   forbiddenFlags:
   - bridgeActivated
+  requireRescueUnlocked: 0
   lockWhenNoRequirements: 1
   requireSearchableHasLoot: 0
   visuallyHideWhenLocked: 0
@@ -12784,7 +12827,9 @@ MonoBehaviour:
   - "\uCC28\uB7C9\uC6A9 \uBC30\uD130\uB9AC"
   - "\uB4DC\uB77C\uC774\uBC84"
   button: {fileID: 1311319654}
-  blockRaycastsWhenEmpty: 1
+  blockRaycastsWhenExhausted: 1
+  allowEmptySearchOnce: 1
+  onlyDisableWhenExhausted: 1
 --- !u!114 &1311319652
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13421,7 +13466,6 @@ GameObject:
   - component: {fileID: 1340195270}
   - component: {fileID: 1340195276}
   - component: {fileID: 1340195275}
-  - component: {fileID: 1340195277}
   - component: {fileID: 1340195278}
   m_Layer: 5
   m_Name: GoToLightHouse
@@ -13609,18 +13653,6 @@ MonoBehaviour:
   m_EffectColor: {r: 0, g: 0.5019608, b: 1, a: 1}
   m_EffectDistance: {x: 5, y: -10}
   m_UseGraphicAlpha: 1
---- !u!114 &1340195277
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1340195268}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 44666dcf20ec1764b92d0f5ef093cba7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1340195278
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13630,11 +13662,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 1340195268}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 02d56295d6037ee4083569a39c458479, type: 3}
+  m_Script: {fileID: 11500000, guid: df71c9c24ce7cd342859948edd4a9a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onlyLock: 0
   requiredItems:
   - "\uC790\uC804\uAC70"
+  requiredFlags: []
+  forbiddenFlags: []
+  requireRescueUnlocked: 1
+  lockWhenNoRequirements: 1
+  requireSearchableHasLoot: 0
   visuallyHideWhenLocked: 0
 --- !u!1 &1453771157
 GameObject:
@@ -13802,7 +13840,9 @@ MonoBehaviour:
   canDropNotes: 1
   initialOneTimeItems: []
   button: {fileID: 1453771162}
-  blockRaycastsWhenEmpty: 1
+  blockRaycastsWhenExhausted: 1
+  allowEmptySearchOnce: 1
+  onlyDisableWhenExhausted: 1
 --- !u!114 &1453771166
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15781,6 +15821,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df71c9c24ce7cd342859948edd4a9a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onlyLock: 0
   requiredItems:
   - "\uAD6C\uBA85\uC870\uB07C"
   requiredFlags:
@@ -15788,6 +15829,7 @@ MonoBehaviour:
   - ActiveRadio
   - bridgeActivated
   forbiddenFlags: []
+  requireRescueUnlocked: 0
   lockWhenNoRequirements: 1
   requireSearchableHasLoot: 1
   visuallyHideWhenLocked: 0
@@ -16183,7 +16225,9 @@ MonoBehaviour:
   canDropNotes: 1
   initialOneTimeItems: []
   button: {fileID: 1567020945}
-  blockRaycastsWhenEmpty: 1
+  blockRaycastsWhenExhausted: 1
+  allowEmptySearchOnce: 1
+  onlyDisableWhenExhausted: 1
 --- !u!114 &1567020949
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16643,7 +16687,9 @@ MonoBehaviour:
   canDropNotes: 1
   initialOneTimeItems: []
   button: {fileID: 0}
-  blockRaycastsWhenEmpty: 1
+  blockRaycastsWhenExhausted: 1
+  allowEmptySearchOnce: 1
+  onlyDisableWhenExhausted: 1
 --- !u!114 &1613130557
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17339,7 +17385,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1666578847
 RectTransform:
   m_ObjectHideFlags: 0
@@ -17600,7 +17646,9 @@ MonoBehaviour:
   canDropNotes: 1
   initialOneTimeItems: []
   button: {fileID: 1675369755}
-  blockRaycastsWhenEmpty: 1
+  blockRaycastsWhenExhausted: 1
+  allowEmptySearchOnce: 1
+  onlyDisableWhenExhausted: 1
 --- !u!114 &1675369759
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17683,7 +17731,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -0.000061035, y: 0}
   m_SizeDelta: {x: 1920, y: 1080}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1715458691
@@ -18013,6 +18061,7 @@ GameObject:
   - component: {fileID: 1739221181}
   - component: {fileID: 1739221180}
   - component: {fileID: 1739221183}
+  - component: {fileID: 1739221184}
   m_Layer: 5
   m_Name: ResetButton
   m_TagString: Untagged
@@ -18083,9 +18132,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 446650370}
-        m_TargetAssemblyTypeName: MetaSave, Assembly-CSharp
-        m_MethodName: ResetAllMeta
+      - m_Target: {fileID: 1739221184}
+        m_TargetAssemblyTypeName: MetaResetButton, Assembly-CSharp
+        m_MethodName: ResetMeta
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -18150,6 +18199,18 @@ MonoBehaviour:
   normalSprite: {fileID: 21300000, guid: db24bdc1ed98c0a4693347f9fc76a554, type: 3}
   hoverScale: 0.94
   speed: 12
+--- !u!114 &1739221184
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1739221178}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 810f54c12e4022c47a4c3ecadf572b41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1739474389
 GameObject:
   m_ObjectHideFlags: 0
@@ -18443,7 +18504,9 @@ MonoBehaviour:
   canDropNotes: 1
   initialOneTimeItems: []
   button: {fileID: 1835018809}
-  blockRaycastsWhenEmpty: 1
+  blockRaycastsWhenExhausted: 1
+  allowEmptySearchOnce: 1
+  onlyDisableWhenExhausted: 1
 --- !u!114 &1835018813
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -20423,7 +20486,9 @@ MonoBehaviour:
   initialOneTimeItems:
   - "\uCD1D"
   button: {fileID: 1989854533}
-  blockRaycastsWhenEmpty: 1
+  blockRaycastsWhenExhausted: 1
+  allowEmptySearchOnce: 1
+  onlyDisableWhenExhausted: 1
 --- !u!114 &1989854537
 MonoBehaviour:
   m_ObjectHideFlags: 0
